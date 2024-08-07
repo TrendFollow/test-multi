@@ -1,0 +1,134 @@
+-- String
+-- <명령어> <key> ~~~~~
+SET user:email alex@example.com
+GET user:email
+
+-- 정수가 문자열로 저장된 경우 INCR, DECR: ++, --
+SET user:count 1
+GET user:count
+INCR user:count
+GET user:count
+DECR user:count
+
+-- MSET, MGET
+MSET user:name brad user:email brad@example.com
+MGET user:name user:email user:count
+
+-- List: Linked List
+-- 스택, 큐
+-- Push, Pop -> 왼쪽(L)이냐 오른쪽(R)이냐
+LPUSH user:list alex
+LPUSH user:list brad
+RPUSH user:list chad
+RPUSH user:list dave
+
+LPOP user:list
+RPOP user:list
+
+-- LLEN: 리스트의 크기
+LLEN user:list
+-- 크기에 맞는 숫자
+LRANGE user:list 0 3
+-- 크기보다 더 큰 숫자
+LRANGE user:list 0 1000000
+-- 음수 index, 0 -1 모든 데이터
+LRANGE user:list 0 -1
+LRANGE user:list 0 -2
+-- end < start 빈 리스트
+LRANGE user:list 1 0
+
+
+
+-- 자료형에 따라 명령어라 달라진다.
+-- list 자료형에 Get 사용불가 반대의 경우도 불가
+GET user:list
+
+-- SET : (문자열의) 집합
+-- 중복을 허용하지 않는다.
+SADD user:java alex
+SADD user:java brad
+SADD user:java chad
+
+SREM user:java alex
+
+SISMEMBER user:java brad
+SISMEMBER user:java dave
+SMEMBERS user:java
+SCARD user:java
+
+-- 교집합 합집합
+SADD user:python alex
+SADD user:python dave
+SADD user:java alex
+
+-- 교집합
+SINTER user:java user:python
+-- 합집합
+SUNION user:python user:java
+-- 교집합 원소의 개수
+-- 2 는 뒤에 2개의 키가 들어갈것이다.
+SINTERCARD 2 user:java user:python
+-- 중복을 허용하지 않는 방문자 수 세기
+-- URL 을 키로 만들고 사용자 ID를 넣어준다.
+
+-- Hash
+-- Filed - Value Pair
+HSET user:alex name alex age 25
+HSET user:alex major CSE
+
+HGET user:alex name
+HGET user:alex age
+HMGET user:alex age major
+HGETALL user:alex
+
+HKEYS user:alex
+HLEN user:alex
+HVALS user:alex
+
+-- 장바구니, 세션 정보
+HSET cart:alex computer 1 mouse 2 keyboard 10
+HGETALL cart:alex
+
+-- Sorted Set
+-- 정렬된 집합 : 중복되지 않는 데이터 + 점수(점수 오름차순 정렬)
+ZADD user:ranks 10 alex
+ZADD user:ranks 9 brad 11 chad
+ZADD user:ranks 8 dave
+ZADD user:ranks 9.5 eric
+
+-- 점수 올려주기
+ZINCRBY user:ranks 2 alex
+-- 순위 가져오기 0 부터 시작
+-- 테이블은 1 부터 시작
+ZRANK user:ranks alex
+ZRANK user:ranks eric
+ZRANK user:ranks dave
+-- 마지막 순위가 0 부터 시작
+ZREVRANK user:ranks alex
+ZREVRANK user:ranks dave
+-- 특정 구간 가져오기
+ZRANGE user:ranks 0 3
+ZREVRANGE user:ranks 0 3
+-- 중복 데이터 삽입의 경우 점수는 갱신되나 삽입은 불가
+ZADD user:ranks 14 alex
+-- 순위표(리더보드), Rate Limiter
+
+-- 레디스의 키에 사용되는 명령어들
+SET somekey "to be deleted"
+GET somekey
+DEL somekey
+
+-- 만료시간 설정 (초)
+SET expirekey "to be expired"
+EXPIRE expirekey 5
+-- 언제까지 유효한지 UNIX 시간을 보여준다.
+EXPIRETIME expirekey
+
+-- KEYS: Key를 검색
+KEYS user:*
+KEYS start*
+
+-- FLUSHDB 모든 데이터 지우기
+FLUSHDB
+
+
